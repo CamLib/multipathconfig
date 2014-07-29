@@ -11,6 +11,7 @@ SAS2IRCU=/usr/local/bin/sas2ircu
 SASCARD=0
 labelsfile=/tmp/mkmpdevlabels.txt
 devsnsfile=/tmp/mkmpdevsn.txt
+mpdevfile=/tmp/mkmpdevlist.txt
 # This should be a pattern for sed -n to include only the manufacturers we want.
 manuf=' s/Pliant *//p ; s/SEAGATE *//p'
 
@@ -20,7 +21,7 @@ manuf=' s/Pliant *//p ; s/SEAGATE *//p'
 # Make a list of all devices, and report enclosure, slot and serial number
 #
 $SAS2IRCU $SASCARD display | sed -n '/Enclosure #/,/Enclosure#/p' \
-	| sed -n 's/  Enclosure #.*: /e/p ; s/  Slot.*: /s/p ; s/  Serial.*: /SerialNo/p ; s/  Manuf.*: //p' \
+	| sed -n 's/  Enclosure #.*: /e/p ; s/  Slot.*: /s/p ; s/  Serial.*: /:/p ; s/  Manuf.*: //p' \
 	| sed -e 'N;N;N;s/\n//g'  \
 	| sed -n "${manuf}" > $labelsfile
 
@@ -29,5 +30,41 @@ $SAS2IRCU $SASCARD display | sed -n '/Enclosure #/,/Enclosure#/p' \
 #
 for i in /dev/da* ; do
 	sn=`camcontrol inq $i -S`
-	echo $sn $i
+	echo "$sn:$i"
 done | sort > $devsnsfile
+
+for sn in `cat $devsnsfile | cut -d: -f 1` ; do
+	echo "Considering SN $sn"
+	grep -q $sn $mpdevfile
+	r=$?
+	if [ $r -eq 0 ] ; then
+		echo "Already considered $sn.  Skipping." 
+	else
+		labcount=`grep -c $sn $labelsfile`
+		if [ $labcount -eq 1 ] ; then
+			echo "Found exactly one label.  This is good."
+			devlabel=`grep $sn $labelsfile | cut -d: -f1`
+			echo $devlabel
+			devcount=`grep -c $sn $devsnsfile`
+			if [ $devsnsfile -gt 1 ] ; then
+				echo "Found more than one path to device.  This is good."
+				grep -n $sn $devsnsfile
+				devlist=''
+				for i in `grep  $sn /tmp/mkmpdevsn.txt | cut -f 2 -d\ ` ; do 
+					devlist="${devlist} $i"
+				done
+				echo $devlabel $devlist >> $mpdevfile
+
+			else
+				echo "Did not find more than one path.  Skipping this device."
+				grep -n $sn $devsnsfile
+		else
+			echo "Did not find a unique label.  Skipping this device."
+			grep -n $sn $labelsfile
+		fi
+	fi
+done
+
+
+
+
