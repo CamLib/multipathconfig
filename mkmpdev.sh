@@ -32,6 +32,9 @@ for i in /dev/da* ; do
 	sn=`camcontrol inq $i -S`
 	echo "$sn:$i"
 done | sort > $devsnsfile
+touch $mpdevfile
+rm $mpdevfile
+touch $mpdevfile
 
 for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 	echo "Considering SN $sn"
