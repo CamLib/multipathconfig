@@ -19,7 +19,7 @@ manuf=' s/Pliant //p ; s/SEAGATE //p'
 #
 # Make a list of all devices, and report enclosure, slot and serial number
 #
-sas2ircu 0 display | sed -n '/Enclosure #/,/Enclosure#/p' \
+$SAS2IRCU $SASCARD display | sed -n '/Enclosure #/,/Enclosure#/p' \
 	| sed -n 's/  Enclosure #.*: /e/p ; s/  Slot.*: /s/p ; s/  Serial.*: /SN/p ; s/  Manuf.*: //p' \
-	| sed -n 'N;N;N;s/\n//g'  \
+	| sed -e 'N;N;N;s/\n//g'  \
 	| sed -n "${manuf}" > $labelsfile
