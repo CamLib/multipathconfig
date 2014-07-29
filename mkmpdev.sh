@@ -22,4 +22,4 @@ manuf=' s/Pliant //p ; s/SEAGATE //p'
 sas2ircu 0 display | sed -n '/Enclosure #/,/Enclosure#/p' \
 	| sed -n 's/  Enclosure #.*: /e/p ; s/  Slot.*: /s/p ; s/  Serial.*: /SN/p ; s/  Manuf.*: //p' \
 	| sed -n 'N;N;N;s/\n//g'  \
-	| sed -n "${manuf}" > $mkmpdevlabels
+	| sed -n "${manuf}" > $labelsfile
