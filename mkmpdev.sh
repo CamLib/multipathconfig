@@ -35,16 +35,16 @@ done | sort > $devsnsfile
 
 for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 	echo "Considering SN $sn"
-	grep -q $sn $mpdevfile
-	r=$?
-	if [ $r -eq 0 ] ; then
-		echo "Already considered $sn.  Skipping." 
-	else
-		labcount=`grep -c $sn $labelsfile`
-		if [ $labcount -eq 1 ] ; then
-			echo "Found exactly one label.  This is good."
-			devlabel=`grep $sn $labelsfile | cut -d: -f1`
-			echo $devlabel
+	labcount=`grep -c $sn $labelsfile`
+	if [ $labcount -eq 1 ] ; then
+		echo "Found exactly one label.  This is good."
+		devlabel=`grep $sn $labelsfile | cut -d: -f1`
+		echo $devlabel
+		grep -q "$devlabel " $mpdevfile
+		r=$?
+		if [ r -eq 0 ] ; then
+			echo "Already considered $devlabel.  Skipping this device."
+		else
 			devcount=`grep -c $sn $devsnsfile`
 			if [ $devcount -gt 1 ] ; then
 				echo "Found more than one path to device.  This is good."
@@ -53,16 +53,17 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 				for i in `grep  $sn /tmp/mkmpdevsn.txt | cut -f 2 -d:` ; do 
 					devlist="${devlist} $i"
 				done
+
 				echo $devlabel $devlist >> $mpdevfile
 
 			else
 				echo "Did not find more than one path.  Skipping this device."
 				grep -n $sn $devsnsfile
 			fi
-		else
-			echo "Did not find a unique label.  Skipping this device."
-			grep -n $sn $labelsfile
 		fi
+	else
+		echo "Did not find a unique label.  Skipping this device."
+		grep -n $sn $labelsfile
 	fi
 done
 
