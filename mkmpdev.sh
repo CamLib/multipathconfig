@@ -58,6 +58,7 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 			else
 				echo "Did not find more than one path.  Skipping this device."
 				grep -n $sn $devsnsfile
+			fi
 		else
 			echo "Did not find a unique label.  Skipping this device."
 			grep -n $sn $labelsfile
