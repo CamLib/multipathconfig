@@ -94,7 +94,7 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 				done
 
 				echo $devlabel $devlist >> $mpdevfile
-				if [ $CREATEDEV -eq 1 ] ;
+				if [ $CREATEDEV -eq 1 ] ; then
 					gmultipath create $devlabel $devlist
 				fi
 
