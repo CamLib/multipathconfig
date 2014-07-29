@@ -46,7 +46,7 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 			devlabel=`grep $sn $labelsfile | cut -d: -f1`
 			echo $devlabel
 			devcount=`grep -c $sn $devsnsfile`
-			if [ $devsnsfile -gt 1 ] ; then
+			if [ $devcount -gt 1 ] ; then
 				echo "Found more than one path to device.  This is good."
 				grep -n $sn $devsnsfile
 				devlist=''
