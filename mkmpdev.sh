@@ -29,7 +29,7 @@ fi
 
 showusage() {
 
-verecho
+
 cat << EOF
 Usage: \
         $sfn -cv
