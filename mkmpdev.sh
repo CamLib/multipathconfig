@@ -35,6 +35,8 @@ Usage: \
         $sfn -cv
         $sfn -c Create devices, rather than just enumerating them.
         $sfn -v Verbose mode.
+Output will be written to $labelsfile, $devsnsfile and $mpdevfile.
+EOF
 }
 
 while getopts +cv c
