@@ -10,7 +10,7 @@ SAS2IRCU=/usr/local/bin/sas2ircu
 # Which SAS card do we talk to?  Sas2ircu list will help you decide.
 SASCARD=0
 labelsfile=/tmp/mkmpdevlabels.txt
-devsnsfile=tmp/mkmpdevsn.txt
+devsnsfile=/tmp/mkmpdevsn.txt
 # This should be a pattern for sed -n to include only the manufacturers we want.
 manuf=' s/Pliant *//p ; s/SEAGATE *//p'
 
@@ -27,11 +27,7 @@ $SAS2IRCU $SASCARD display | sed -n '/Enclosure #/,/Enclosure#/p' \
 #
 # Make a list of all /dev/da*, and report serial numbers
 #
-touch $devsnsfile
-rm $devsnsfile
-touch $devsnsfile
-
 for i in /dev/da* ; do
 	sn=`camcontrol inq $i -S`
-	echo $sn $i >> $devsnsfile
-done
+	echo $sn $i
+done | sort > $devsnsfile
