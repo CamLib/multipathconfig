@@ -16,7 +16,38 @@ mpdevfile=/tmp/mkmpdevlist.txt
 manuf=' s/Pliant *//p ; s/SEAGATE *//p'
 
 # Shouldn't need to modify below here.
+CREATEDEV=0
+verb=0
+showhelp=0
+sfn=${0##*/} # Short version of our filename
 
+qecho() {
+if [ $verb -ne 0 ] ; then
+echo $1
+fi
+}
+
+showusage() {
+
+verecho
+cat << EOF
+Usage: \
+        $sfn -cv
+        $sfn -c Create devices, rather than just enumerating them.
+        $sfn -v Verbose mode.
+}
+
+while getopts +cv c
+do
+	case $c in
+		c)	CREATEDEV=1;;
+		v)	verb=1;;
+		h|\?)
+			showhelp=1
+			showusage
+			exit 1;;
+	esac
+done
 #
 # Make a list of all devices, and report enclosure, slot and serial number
 #
@@ -61,6 +92,9 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 				done
 
 				echo $devlabel $devlist >> $mpdevfile
+				if [ $CREATEDEV -eq 1 ] ;
+					gmultipath create $devlabel $devlist
+				fi
 
 			else
 				echo "Did not find more than one path.  Skipping this device."
