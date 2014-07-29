@@ -20,6 +20,7 @@ manuf=' s/Pliant *//p ; s/SEAGATE *//p'
 #
 # Make a list of all devices, and report enclosure, slot and serial number
 #
+echo "Making a list of devices in each enclsoure."
 $SAS2IRCU $SASCARD display | sed -n '/Enclosure #/,/Enclosure#/p' \
 	| sed -n 's/  Enclosure #.*: /e/p ; s/  Slot.*: /s/p ; s/  Serial.*: /:/p ; s/  Manuf.*: //p' \
 	| sed -e 'N;N;N;s/\n//g'  \
@@ -28,6 +29,7 @@ $SAS2IRCU $SASCARD display | sed -n '/Enclosure #/,/Enclosure#/p' \
 #
 # Make a list of all /dev/da*, and report serial numbers
 #
+echo "Making a list of device serial numbers."
 for i in /dev/da* ; do
 	sn=`camcontrol inq $i -S`
 	echo "$sn:$i"
@@ -36,6 +38,7 @@ touch $mpdevfile
 rm $mpdevfile
 touch $mpdevfile
 
+echo "Preparing mappings of multi path device labels and devices."
 for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 	echo "Considering SN $sn"
 	labcount=`grep -c $sn $labelsfile`
@@ -45,7 +48,7 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 		echo $devlabel
 		grep -q "$devlabel " $mpdevfile
 		r=$?
-		if [ r -eq 0 ] ; then
+		if [ $r -eq 0 ] ; then
 			echo "Already considered $devlabel.  Skipping this device."
 		else
 			devcount=`grep -c $sn $devsnsfile`
