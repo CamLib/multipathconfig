@@ -12,7 +12,7 @@ SASCARD=0
 labelsfile=/tmp/mkmpdevlabels.txt
 devsnsfile=tmp/mkmpdevsn.txt
 # This should be a pattern for sed -n to include only the manufacturers we want.
-manuf=' s/Pliant //p ; s/SEAGATE //p'
+manuf=' s/Pliant *//p ; s/SEAGATE *//p'
 
 # Shouldn't need to modify below here.
 
@@ -20,6 +20,18 @@ manuf=' s/Pliant //p ; s/SEAGATE //p'
 # Make a list of all devices, and report enclosure, slot and serial number
 #
 $SAS2IRCU $SASCARD display | sed -n '/Enclosure #/,/Enclosure#/p' \
-	| sed -n 's/  Enclosure #.*: /e/p ; s/  Slot.*: /s/p ; s/  Serial.*: /SN/p ; s/  Manuf.*: //p' \
+	| sed -n 's/  Enclosure #.*: /e/p ; s/  Slot.*: /s/p ; s/  Serial.*: /SerialNo/p ; s/  Manuf.*: //p' \
 	| sed -e 'N;N;N;s/\n//g'  \
 	| sed -n "${manuf}" > $labelsfile
+
+#
+# Make a list of all /dev/da*, and report serial numbers
+#
+touch $devsnsfile
+rm $devsnsfile
+touch $devsnsfile
+
+for i in /dev/da* ; do
+	sn=`camcontrol inq $i -S`
+	echo $sn $i >> $devsnsfile
+done
