@@ -63,7 +63,7 @@ $SAS2IRCU $SASCARD display | sed -n '/Enclosure #/,/Enclosure#/p' \
 # Make a list of all /dev/da*, and report serial numbers
 #
 echo "Making a list of device serial numbers."
-for i in /dev/da* ; do
+for i in `ls /dev/da* | sed -n '/\/dev\/da[0-9]*$/p'` ; do
 	sn=`camcontrol inq $i -S`
 	echo "$sn:$i"
 done | sort > $devsnsfile
