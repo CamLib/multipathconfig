@@ -82,8 +82,8 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 	# longest substring that works, and hope it is unique.
 	#
 	nc=`echo $sn | wc -c`
-	while [ $lc -gt 0 ] ; do
-		ssn=$(echo $sn | cut -c1-$lc) 
+	while [ $nc -gt 0 ] ; do
+		ssn=$(echo $sn | cut -c1-$nc) 
 		nc=$(grep -c $ssn $labelsfile)
 		if [ $nc -gt 0 ] ; then 
 			break 
