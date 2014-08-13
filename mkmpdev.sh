@@ -74,22 +74,37 @@ touch $mpdevfile
 echo "Preparing mappings of multi path device labels and devices."
 for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 	echo "Considering SN $sn"
-	labcount=`grep -c $sn $labelsfile`
+	#
+	# We look for a single match of our serial number in $labelsfile.
+	# Unfortunately, sometimes there is a short and a long form, and 
+	# we sometimes have the short form in $sn, the long in $labelsfile, 
+	# and sometimes vice versa.  Hence we attempt to match against the 
+	# longest substring that works, and hope it is unique.
+	#
+	nc=`echo $sn | wc -c`
+	while [ $lc -gt 0 ] ; do
+		ssn=$(echo $sn | cut -c1-$lc) 
+		nc=$(grep -c $ssn $labelsfile)
+		if [ $nc -gt 0 ] ; then 
+			break 
+		fi
+	done
+	labcount=`grep -c $ssn $labelsfile`
 	if [ $labcount -eq 1 ] ; then
 		echo "Found exactly one label.  This is good."
-		devlabel=`grep $sn $labelsfile | cut -d: -f1`
+		devlabel=`grep $ssn $labelsfile | cut -d: -f1`
 		echo $devlabel
 		grep -q "$devlabel " $mpdevfile
 		r=$?
 		if [ $r -eq 0 ] ; then
 			echo "Already considered $devlabel.  Skipping this device."
 		else
-			devcount=`grep -c $sn $devsnsfile`
+			devcount=`grep -c $ssn $devsnsfile`
 			if [ $devcount -gt 1 ] ; then
 				echo "Found more than one path to device.  This is good."
-				grep -n $sn $devsnsfile
+				grep -n $ssn $devsnsfile
 				devlist=''
-				for i in `grep  $sn /tmp/mkmpdevsn.txt | cut -f 2 -d:` ; do 
+				for i in `grep  $ssn /tmp/mkmpdevsn.txt | cut -f 2 -d:` ; do 
 					devlist="${devlist} $i"
 				done
 
@@ -100,7 +115,7 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 
 			else
 				echo "Did not find more than one path.  Skipping this device."
-				grep -n $sn $devsnsfile
+				grep -n $ssn $devsnsfile
 			fi
 		fi
 	else
