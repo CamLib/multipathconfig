@@ -13,7 +13,7 @@ labelsfile=/tmp/mkmpdevlabels.txt
 devsnsfile=/tmp/mkmpdevsn.txt
 mpdevfile=/tmp/mkmpdevlist.txt
 # This should be a pattern for sed -n to include only the manufacturers we want.
-manuf=' s/Pliant *//p ; s/SEAGATE *//p'
+manuf=' s/Pliant *//p ; s/SEAGATE *//p ; s/WD *//p'
 
 # Shouldn't need to modify below here.
 CREATEDEV=0
