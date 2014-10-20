@@ -62,9 +62,11 @@ done
 for i in $labelsfile $devsnsfile $$mpdevfile ; do
 	if [ -f "$i.2" ] ; then
 		mv $i.2 ${i}.3
-	fi	if [ -f "$i.1" ] ; then
+	fi	
+	if [ -f "$i.1" ] ; then
 		mv $i.1 ${i}.2
-	fi	if [ -f "$i" ] ; then
+	fi	
+	if [ -f "$i" ] ; then
 		mv $i ${i}.1
 	fi
 done
