@@ -127,7 +127,7 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 				echo "Found more than one path to device.  This is good."
 				grep -n $ssn $devsnsfile
 				devlist=''
-				for i in `grep  $ssn /tmp/mkmpdevsn.txt | cut -f 2 -d:` ; do 
+				for i in `grep  $ssn %devsnsfile | cut -f 2 -d:` ; do 
 					devlist="${devlist} $i"
 				done
 
