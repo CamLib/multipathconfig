@@ -9,14 +9,19 @@
 SAS2IRCU=/usr/local/bin/sas2ircu
 # Which SAS card do we talk to?  Sas2ircu list will help you decide.
 SASCARD=0
-labelsfile=/tmp/mkmpdevlabels.txt
-devsnsfile=/tmp/mkmpdevsn.txt
-mpdevfile=/tmp/mkmpdevlist.txt
+mpdevdir=/etc/mkmpdev
+#mkmpdevlabels.txt has enclosure and slot mapped to serial number.  E.g. e3s0:Z1Z40YAX
+labelsfile=${mpdevdir}/mkmpdevlabels.txt
+#mkmpdevsn.txt has serial numbers mapped to devices.  E.g. Z1Z40YAX:/dev/da305, Z1Z40YAX:/dev/da6
+devsnsfile=${mpdevdir}/mkmpdevsn.txt
+#mkmpdevlist.txt has enclosure and slot mapped to devices.  E.g. e3s0 /dev/da305 /dev/da6
+mpdevfile=${mpdevdir}/mkmpdevlist.txt
 # This should be a pattern for sed -n to include only the manufacturers we want.
 manuf=' s/Pliant *//p ; s/SEAGATE *//p ; s/WD *//p'
 
 # Shouldn't need to modify below here.
 CREATEDEV=0
+BACKUP=0
 verb=0
 showhelp=0
 sfn=${0##*/} # Short version of our filename
@@ -43,12 +48,25 @@ while getopts +cv c
 do
 	case $c in
 		c)	CREATEDEV=1;;
+		b)	BACKUP=1;;
 		v)	verb=1;;
 		h|\?)
 			showhelp=1
 			showusage
 			exit 1;;
 	esac
+done
+#
+# Make a backup copy of exisiting output files.
+#
+for i in $labelsfile $devsnsfile $$mpdevfile ; do
+	if [ -f "$i.2" ] ; then
+		mv $i.2 ${i}.3
+	fi	if [ -f "$i.1" ] ; then
+		mv $i.1 ${i}.2
+	fi	if [ -f "$i" ] ; then
+		mv $i ${i}.1
+	fi
 done
 #
 # Make a list of all devices, and report enclosure, slot and serial number
