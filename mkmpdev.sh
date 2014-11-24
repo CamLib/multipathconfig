@@ -59,7 +59,7 @@ done
 #
 # Make a backup copy of exisiting output files.
 #
-for i in $labelsfile $devsnsfile $$mpdevfile ; do
+for i in $labelsfile $devsnsfile $mpdevfile ; do
 	if [ -f "$i.2" ] ; then
 		mv $i.2 ${i}.3
 	fi	
