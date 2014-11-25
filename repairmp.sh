@@ -16,7 +16,7 @@ d1=$(grep "$dn " $mpdevfile| cut -f2 -w | sed -e 's@/dev/@@') ;
 d2=$(grep "$dn " $mpdevfile | cut -f3 -w | sed -e 's@/dev/@@') ; 
 d3=$(gmultipath getactive $dn); 
 if [ `echo $d3 | wc -w` -lt 2 ] ; then 
-	d4=$(echo $d1 | grep -v $d3 ; echo $d2 | grep -v $d3) ; gmultipath add $dn $d4 ; 
+	d4=$(echo $d1 | sed -e "/^${d3}$/d" ; echo $d2 | sed -e "/^${d3}$/d") ; gmultipath add $dn $d4 ; 
 else d4="Nothing!" ; 
 fi ; 
 echo "+++ Device $dn had $d1 and $d2 and now has $d3.  We just added $d4" ; 
