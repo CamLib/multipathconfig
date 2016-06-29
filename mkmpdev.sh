@@ -113,9 +113,9 @@ for sn in `cat $devsnsfile | cut -d: -f 1` ; do
 		nc=$((nc-1))
 	done
 	labcount=`grep -c $ssn $labelsfile`
-	if [ $labcount -eq 1 ] ; then
-		echo "Found exactly one label.  This is good."
-		devlabel=`grep $ssn $labelsfile | cut -d: -f1`
+	if [ $labcount -gt 0 ] ; then
+		echo "Found at least one label.  This is good."
+		devlabel=`grep $ssn $labelsfile | head -1 | cut -d: -f1`
 		echo $devlabel
 		grep -q "$devlabel " $mpdevfile
 		r=$?
