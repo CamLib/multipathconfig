@@ -17,7 +17,7 @@ devsnsfile=${mpdevdir}/mkmpdevsn.txt
 #mkmpdevlist.txt has enclosure and slot mapped to devices.  E.g. e3s0 /dev/da305 /dev/da6
 mpdevfile=${mpdevdir}/mkmpdevlist.txt
 # This should be a pattern for sed -n to include only the manufacturers we want.
-manuf=' s/Pliant *//p ; s/SEAGATE *//p ; s/WD *//p'
+manuf=' s/Pliant *//p ; s/SEAGATE *//p ; s/WD *//p ; s/TOSHIBA *//p'
 
 # Shouldn't need to modify below here.
 CREATEDEV=0
